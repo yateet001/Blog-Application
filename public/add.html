@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Blog - Add Post</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <div class="brand">Simple Blog</div>
+      <div class="links">
+        <a href="/index.html">Home</a>
+        <a href="/add.html" class="btn">Add Post</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <h1>Add a New Post</h1>
+    <form id="postForm" class="card">
+      <div class="field">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" placeholder="Enter title" required />
+      </div>
+      <div class="field">
+        <label for="content">Content</label>
+        <textarea id="content" name="content" rows="6" placeholder="Write your post..." required></textarea>
+      </div>
+      <button type="submit" class="btn primary">Save Post</button>
+      <p id="message" class="message" style="display:none;"></p>
+    </form>
+  </main>
+
+  <script>
+    const form = document.getElementById('postForm');
+    const message = document.getElementById('message');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('title').value.trim();
+      const content = document.getElementById('content').value.trim();
+      try {
+        const res = await fetch('/posts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, content })
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Failed to save');
+        }
+        message.textContent = 'Post saved! Redirecting...';
+        message.style.display = 'block';
+        form.reset();
+        setTimeout(() => window.location.href = '/index.html', 700);
+      } catch (err) {
+        message.textContent = err.message;
+        message.style.display = 'block';
+        message.style.color = '#b00020';
+      }
+    });
+  </script>
+</body>
+</html>
+
+
